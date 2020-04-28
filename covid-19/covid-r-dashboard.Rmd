@@ -1,0 +1,189 @@
+---
+title: "COVID-19 Data by County"
+author: "Patty Frontiera, UC Berkeley D-Lab"
+output: 
+  flexdashboard::flex_dashboard:
+    orientation: rows
+---
+
+Row {data-height=900 .tabset .tabset-fade}
+-------------------------------------
+
+### Map of County Fatality Rate
+
+```{r}
+library(leaflet)
+library(leaflet.esri)
+
+# URL to access the JHU ESRI ArcGIS Online Layer
+covid_esri_url = "https://services9.arcgis.com/6Hv9AANartyT7fJW/arcgis/rest/services/USCounties_cases_V1/FeatureServer/0"
+
+# The popup content for all maps
+the_popup = paste0("function(feature) {",
+                        "x = feature.properties;",
+		                    "temp = {Countyname: x.Countyname, ST_Abbr: x.ST_Abbr, \ 
+                                Confirmed: x.Confirmed, Deaths: x.Deaths, \
+                                FatalityRa: x.FatalityRa.toFixed(1), url: x.url, \ 
+                                DateChecke: x.DateChecke} ;",
+                        "  return L.Util.template(",
+                        "    \"<p><b>{Countyname} County, {ST_Abbr}</b></br>",
+                        "     <small><em>as of {DateChecke}</em></small></p>",
+                        "      <p>Confirmed cases: {Confirmed} ",
+                        "       <br>Deaths: {Deaths}",
+                        "       <br>Fatality Rate: {FatalityRa}",
+                        "      </p>",
+                        "    \",",
+                        "    temp",
+                        "  );",
+                        "}"
+                      )
+
+# map1 - fatality rate map
+fatality_map <- leaflet() %>%
+  
+  # The the center point and zoom level for the map on startup
+  setView(lng=-100.34004, lat=37.2855, zoom=5) %>%
+  
+  # Add a basemap
+  addProviderTiles("CartoDB.Positron") %>%
+  
+  # Add the COVID-19 ESRI Layer
+  addEsriFeatureLayer(covid_esri_url,
+                      color = '#000000', 
+                      weight = 0.25 , # thickness of the county outines
+                      opacity = 0.65, # opacity of the county outlines
+                      fillOpacity = 0.65,  # opacity of the county fill
+                      highlightOptions = highlightOptions(weight=2, 
+                                                          fillOpacity=0.8, 
+                                                          bringToFront=TRUE,
+                                                          sendToBack=TRUE),
+                      options = featureLayerOptions(
+                         simplifyFactor = 0.5,
+                         precision = 5,
+                         # Set the style based on the feature property we are mapping - here Fatality Rate (FatalityRa)
+                         style = JS("function(feature){
+                            var frate = feature.properties.FatalityRa;
+                                 if (frate <= 0) {
+                                    return {fillColor: 'white'};
+                                 } else if (frate < 3){
+                                    return {fillColor: 'yellow'};
+                                 } else if (frate < 6){
+                                    return {fillColor: 'orange'};
+                                 } else {
+                                    return {fillColor: 'red'};
+                                 }
+                          }")
+                       ),
+                      # Add the popup to the map
+                      popupProperty = JS(the_popup)) %>%
+  # Add a legend based on the property being mapped
+  addLegend( title="Fatality Rate", 
+             colors=c("white","yellow","orange","red"),
+             labels=c("<1","1-3","3-6","6+"), 
+             opacity=0.8, 
+             position="bottomright")
+
+fatality_map
+
+```
+
+
+### Map of Confirmed Cases
+
+```{r}
+cases_map <- leaflet() %>%
+  setView(lng=-100.34004, lat=37.2855, zoom=5) %>%
+  addProviderTiles("CartoDB.Positron") %>%
+  
+  addEsriFeatureLayer(covid_esri_url,
+                      color = '#000000', 
+                      weight = 0.25 , # thickness of the county outines
+                      opacity = 0.65, # opacity of the county outlines
+                      fillOpacity = 0.65,  # opacity of the county fill
+                      highlightOptions = highlightOptions(weight=2, 
+                                                          fillOpacity=0.8, 
+                                                          bringToFront=TRUE,
+                                                          sendToBack=TRUE),
+                      options = featureLayerOptions(
+                        simplifyFactor = 0.5,
+                        precision = 5,
+                        style = JS("function(feature){
+                          var frate = feature.properties.Confirmed;
+                          if(frate <= 0){
+                            return {fillColor: '#f1eef6'};
+                          } else if(frate < 100){
+                            return {fillColor: '#d7b5d8'};
+                          } else if(frate < 500){
+                            return {fillColor: '#df65b0'};
+                          } else if(frate < 1000){
+                            return {fillColor: '#dd1c77'};
+                          } else {
+                            return {fillColor: '#980043'};
+                          }
+                        }")),
+                      
+                      popupProperty = JS(the_popup)) %>%
+  
+  addLegend(title="Confirmed Cases", 
+            colors=c('#980043','#dd1c77','#df65b0','#d7b5d8','#f1eef6'),
+            labels=c("1000+","500-1000", "500-100", "1-100", "0"), 
+            opacity=0.8, position="bottomright")
+
+
+
+cases_map
+```
+
+
+### Map of Confirmed Deaths
+
+```{r}
+
+deaths_map <- leaflet() %>%
+  setView(lng=-100.34004, lat=37.2855, zoom=5) %>%
+  addProviderTiles("CartoDB.Positron") %>%
+  
+  addEsriFeatureLayer(covid_esri_url,
+                      color = '#000000', 
+                      weight = 0.25 , # thickness of the county outines
+                      opacity = 0.65, # opacity of the county outlines
+                      fillOpacity = 0.65,  # opacity of the county fill
+                      highlightOptions = highlightOptions(weight=2, 
+                                                          fillOpacity=0.8, 
+                                                          bringToFront=TRUE,
+                                                          sendToBack=TRUE),
+                      options = featureLayerOptions(
+                        simplifyFactor = 0.5,
+                        precision = 5,
+                        style = JS("function(feature){
+                          var frate = feature.properties.Deaths;
+                          if(frate <= 0){
+                            return {fillColor: '#f1eef6'};
+                          } else if(frate < 50){
+                            return {fillColor: '#d7b5d8'};
+                          } else if(frate < 100){
+                            return {fillColor: '#df65b0'};
+                          } else if(frate < 500){
+                            return {fillColor: '#dd1c77'};
+                          } else {
+                            return {fillColor: '#980043'};
+                          }
+                        }")),
+                      
+                      popupProperty = JS(the_popup)) %>%
+            addLegend(title="Confirmed Deaths", 
+            colors=c('#980043','#dd1c77','#df65b0','#d7b5d8','#f1eef6'),
+            labels=c("500+","100-500", "50-100", "1-50", "0"), 
+            opacity=0.8, position="bottomright")
+
+deaths_map
+```
+
+
+Row {data-height=100}
+-------------------------------------
+
+### About the maps
+
+This webmap contains the data on US COVID-19 cases aggregated by county. Updated daily, these data are pulled from an ESRI ArcGIS Online data layer created by the Center for Systems Science and Engineering (CSSE) at Johns Hopkins University. Details can be found [here](https://www.arcgis.com/home/item.html?id=4cb598ae041348fb92270f102a6783cb). The webmap was created for a tutorial by the [UC Berkeley D-Lab](https://dlab.berkeley.edu) using RStudio FlexDashboard, with the R packages leaflet and leaflet.esri and is for informational purposes only. The source code can be found here.
+ 
