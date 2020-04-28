@@ -9,7 +9,7 @@ output:
 Row {data-height=900 .tabset .tabset-fade}
 -------------------------------------
 
-### Map of County Fatality Rate
+### Fatality Rate
 
 ```{r}
 library(leaflet)
@@ -76,6 +76,7 @@ fatality_map <- leaflet() %>%
                        ),
                       # Add the popup to the map
                       popupProperty = JS(the_popup)) %>%
+  
   # Add a legend based on the property being mapped
   addLegend( title="Fatality Rate", 
              colors=c("white","yellow","orange","red"),
@@ -83,12 +84,13 @@ fatality_map <- leaflet() %>%
              opacity=0.8, 
              position="bottomright")
 
+# Display the map
 fatality_map
 
 ```
 
 
-### Map of Confirmed Cases
+### Confirmed Cases
 
 ```{r}
 cases_map <- leaflet() %>%
@@ -135,7 +137,7 @@ cases_map
 ```
 
 
-### Map of Confirmed Deaths
+### Confirmed Deaths
 
 ```{r}
 
