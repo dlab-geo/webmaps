@@ -1,7 +1,6 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <!-- HTML Comments are between these two open and close tags -->
     <!-- Load Leaflet from CDN -->
     <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css"/>
     <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
@@ -77,7 +76,6 @@ Select a map:
 
     // set up color arrays for each mapped attribute - used to style polygons and legend
     var mycolors = {
-		//Confirmed: ['#800026', '#BD0026', '#E31A1C', '#FC4E2A', '#FFEDA0'],
 		Confirmed: ['#bd0026','#f03b20','#fd8d3c','#fecc5c','#ffffb2'],
 		Deaths: ['#980043','#dd1c77','#df65b0','#d7b5d8','#f1eef6'],
 		FatalityRa: ['#980043','#dd1c77','#df65b0','#d7b5d8','#f1eef6']
@@ -109,7 +107,6 @@ Select a map:
 		};
 
 	}
-
 
 	function getColor(d, v) {
         // Function to get the color map for the selected layer attribute being mapped
@@ -172,8 +169,6 @@ Select a map:
 
     // Add the map data as an ESRI FeatureLayer
 	var cendata = L.esri.featureLayer({
-		//url: "https://services2.arcgis.com/iq8zYa0SRsvIFFKz/arcgis/rest/services/msi_tractdata_acs2017/FeatureServer/0",
-		//url: "https://services1.arcgis.com/0MSEUqKaxRlEPj5g/arcgis/rest/services/Coronavirus_2019_nCoV_Cases/FeatureServer/0",
 		url: "https://services9.arcgis.com/6Hv9AANartyT7fJW/arcgis/rest/services/USCounties_cases_V1/FeatureServer/0",
 		style: getStyle,
 		onEachFeature: onEachFeature
@@ -185,10 +180,14 @@ Select a map:
 	// Set the default popup template
 	cendata.bindPopup(function(e){
 		//uncomment and click on  a feature in the map to see all available fields you can add top popup
-		console.log(e.feature.properties) 
+		//console.log(e.feature.properties) 
+
+        // Note we could just pass in e.features.properties to L.Util.template but we do not
+        // so that we can format the number of significant digits displayed for the Fatality Rate (FatalityRa)
+	  	//return L.Util.template(popup_strings[sn_val], e.feature.properties);
+
 		x= e.feature.properties;
 		temp = {Countyname: x.Countyname, ST_Abbr: x.ST_Abbr, Confirmed: x.Confirmed, Deaths: x.Deaths, FatalityRa: x.FatalityRa.toFixed(1), url: x.url, DateChecke: x.DateChecke} ;
-	  	//return L.Util.template(popup_strings[sn_val], e.feature.properties);
 	  	return L.Util.template(popup_strings[sn_val], temp);
 	});
 
