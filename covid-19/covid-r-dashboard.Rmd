@@ -185,5 +185,5 @@ Row {data-height=100}
 
 ### About the maps
 
-This webmap contains the data on US COVID-19 cases aggregated by county. Updated daily, these data are pulled from an ESRI ArcGIS Online data layer created by the Center for Systems Science and Engineering (CSSE) at Johns Hopkins University. Details can be found [here](https://www.arcgis.com/home/item.html?id=4cb598ae041348fb92270f102a6783cb). The webmap was created for a tutorial by the [UC Berkeley D-Lab](https://dlab.berkeley.edu) using RStudio FlexDashboard, with the R packages leaflet and leaflet.esri and is for informational purposes only. The source code can be found here.
+This webmap contains the data on US COVID-19 cases aggregated by county. Updated daily, these data are pulled from an ESRI ArcGIS Online data layer created by the Center for Systems Science and Engineering (CSSE) at Johns Hopkins University. Details can be found [here](https://www.arcgis.com/home/item.html?id=4cb598ae041348fb92270f102a6783cb). The webmap was created for a tutorial by the [UC Berkeley D-Lab](https://dlab.berkeley.edu) using RStudio FlexDashboard, with the R packages leaflet and leaflet.esri and is for informational purposes only. The source code can be found [here](https://github.com/dlab-geo/webmaps).
  
